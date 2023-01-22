@@ -47,8 +47,7 @@ public static class ExcelService
         // Rows Count
         for (var i = 1; i < arrayStudents.Length; i++)
         {
-            
-            Console.WriteLine(i);
+             Console.WriteLine($"Строка: {i}; Id: {arrayStudents[i].Id}");
             var fileName = $"{arrayStudents[i].Id}_{arrayStudents[i].LastName}";
             var currentRow = sheet.CreateRow(i + 1);
             CreateCell(currentRow, 0, i.ToString(), borderedCellStyle);
@@ -59,9 +58,10 @@ public static class ExcelService
             CreateCell(currentRow, 5, arrayStudents[i].YearStart, borderedCellStyle);
             CreateCell(currentRow, 6, arrayStudents[i].NameFaculty, borderedCellStyle);
             CreateCell(currentRow, 7, arrayStudents[i].NameSpecialty, borderedCellStyle);
-            CreateCell(currentRow, 8, fileName + ".jpg", borderedCellStyle);
+            CreateCell(currentRow, 8, arrayStudents[i].PathUrl, borderedCellStyle);
             // Скачать фото
-           await client.DownloadFileTaskAsync(arrayStudents[i].PathUrl, Directory.GetCurrentDirectory() + "\\images\\" + fileName + ".jpg");
+            await client.DownloadFileTaskAsync(arrayStudents[i].PathUrl, Directory.GetCurrentDirectory() + "\\images\\" + fileName + ".jpg");
+
         }
 
          // Auto sized all the affected columns

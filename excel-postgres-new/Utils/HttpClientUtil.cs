@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Net;
+using System.Text;
 using System.Text.Json;
 using excel_postgres_new.Models;
 using excel_postgres_new.Models.Students;
@@ -8,12 +9,25 @@ namespace excel_postgres_new.Utils;
 public static class HttpClientUtil
 {
     private const string Host = "http://jmu.api.lgpu.org/";
-
+    
     public static async Task DownloadFileTaskAsync(this HttpClient client, string uri, string fileName)
     {
-        await using var s = await client.GetStreamAsync(new Uri(Host + uri));
-        await using var fs = new FileStream(fileName, FileMode.OpenOrCreate);
-        await s.CopyToAsync(fs);
+        try
+        {
+            // Замена пробелов если такие есть
+            var replace = uri.Replace(" ", "%20");
+
+            await using var s = await client.GetStreamAsync(new Uri(Host + replace));
+            await using var fs = new FileStream(fileName, FileMode.OpenOrCreate);
+            await s.CopyToAsync(fs);
+        }
+        // Заглушка
+        catch (Exception)
+        {
+            Console.WriteLine(Host + uri);
+            
+            //throw;
+        }
     }
     
       public static async Task<User> GetUserToken(this HttpClient httpClient)
