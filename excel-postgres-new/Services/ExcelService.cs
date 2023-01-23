@@ -58,13 +58,11 @@ public static class ExcelService
             CreateCell(currentRow, 5, arrayStudents[i].YearStart, borderedCellStyle);
             CreateCell(currentRow, 6, arrayStudents[i].NameFaculty, borderedCellStyle);
             CreateCell(currentRow, 7, arrayStudents[i].NameSpecialty, borderedCellStyle);
-            CreateCell(currentRow, 8, arrayStudents[i].PathUrl, borderedCellStyle);
+            CreateCell(currentRow, 8, fileName + ".jpg", borderedCellStyle);
             // Скачать фото
             await client.DownloadFileTaskAsync(arrayStudents[i].PathUrl, Directory.GetCurrentDirectory() + "\\images\\" + fileName + ".jpg");
-
         }
-
-         // Auto sized all the affected columns
+        // Auto sized all the affected columns
         int lastColumNum = sheet.GetRow(0).LastCellNum;
         for (var i = 0; i <= lastColumNum; i++)
         {
