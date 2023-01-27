@@ -10,7 +10,7 @@ public class SlvaikData : BaseModel
         
     [JsonPropertyName("specialty_name")] public string NameSpecialty { get; set; } = "undefined";
 
-    [JsonPropertyName("level_name")] public string Level { get; set; } = "undefined";
+    [JsonPropertyName("form_name")] public string Level { get; set; } = "undefined";
         
     [JsonPropertyName("group_date_start")] public string YearStart { get; set; } = "undefined";
 }

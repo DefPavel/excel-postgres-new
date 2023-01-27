@@ -45,20 +45,24 @@ public static class ExcelService
         
         Console.WriteLine("Размер массива:" + arrayStudents.Length);
         // Rows Count
-        for (var i = 1; i < arrayStudents.Length; i++)
+        var distinct = arrayStudents.DistinctBy(x => x.Id).ToArray();
+        
+        Console.WriteLine("Размер уникального массива:" + distinct.Length);
+        
+        for (var i = 1; i < distinct.Length; i++)
         {
              Console.WriteLine($"Строка: {i}; Id: {arrayStudents[i].Id}");
-            var fileName = $"{arrayStudents[i].Id}_{arrayStudents[i].LastName}";
+            var fileName = $"{i}_{arrayStudents[i].Id}_{arrayStudents[i].LastName}";
             var currentRow = sheet.CreateRow(i + 1);
             CreateCell(currentRow, 0, i.ToString(), borderedCellStyle);
             CreateCell(currentRow, 1, arrayStudents[i].LastName, borderedCellStyle);
             CreateCell(currentRow, 2, arrayStudents[i].FirstName, borderedCellStyle);
             CreateCell(currentRow, 3, arrayStudents[i].MiddleName, borderedCellStyle);
+            CreateCell(currentRow, 4, arrayStudents[i].NameFaculty, borderedCellStyle);
+            CreateCell(currentRow, 5, arrayStudents[i].NameSpecialty, borderedCellStyle);
+            CreateCell(currentRow, 6, fileName + ".jpg", borderedCellStyle);
             CreateCell(currentRow, 4, arrayStudents[i].Level, borderedCellStyle);
             CreateCell(currentRow, 5, arrayStudents[i].YearStart, borderedCellStyle);
-            CreateCell(currentRow, 6, arrayStudents[i].NameFaculty, borderedCellStyle);
-            CreateCell(currentRow, 7, arrayStudents[i].NameSpecialty, borderedCellStyle);
-            CreateCell(currentRow, 8, fileName + ".jpg", borderedCellStyle);
             // Скачать фото
             await client.DownloadFileTaskAsync(arrayStudents[i].PathUrl, Directory.GetCurrentDirectory() + "\\images\\" + fileName + ".jpg");
         }
