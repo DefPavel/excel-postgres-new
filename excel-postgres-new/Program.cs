@@ -22,8 +22,16 @@ var userToken =  await client.GetUserToken();
 
 // Получить студентов
 var students = await client.GetStudents(userToken.Token);
-var enumerableWithPhoto = students.WithPhoto;
+var enumerableWithPhoto = students.WithOutPhoto;
 // Генерация в excel
 if (enumerableWithPhoto != null)
-    await ExcelService.CreateExcelStudents("Студенты у которых нет фото", "Есть фото",
+    await ExcelService.CreateExcelStudents("Студенты у которых есть фото", "Есть фото",
         enumerableWithPhoto, client);
+
+// Подсчет
+// if(enumerableWithPhoto != null)
+    // ArrayService.CountsArraysNoPhoto(enumerableWithPhoto);
+    // ArrayService.CountsArraysWithPhoto(enumerableWithPhoto);
+
+// ArrayService.CheckFiles(enumerableWithPhoto);
+    

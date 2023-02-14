@@ -39,30 +39,36 @@ public static class ExcelService
         CreateCell(headerRow, 3, "Отчество", borderedCellStyle);
         CreateCell(headerRow, 4, "Форма обучения", borderedCellStyle);
         CreateCell(headerRow, 5, "Год поступления", borderedCellStyle);
-        CreateCell(headerRow, 6, "Институт/Факультет", borderedCellStyle);
-        CreateCell(headerRow, 7, "Специальность", borderedCellStyle);
-        CreateCell(headerRow, 8, "Фото", borderedCellStyle);
+        CreateCell(headerRow, 6, "Фото", borderedCellStyle);
+        CreateCell(headerRow, 7, "Институт/Факультет", borderedCellStyle);
+        CreateCell(headerRow, 8, "Специальность", borderedCellStyle);
+
+        // Rows Count
+        var distinct = arrayStudents
+            .Where(x => x.Level == "Очная")
+            .DistinctBy(x => x.Id)
+            .OrderBy(x => x.NameFaculty)
+            .ThenBy(x => x.NameSpecialty)
+            .ToArray();
         
         Console.WriteLine("Размер массива:" + arrayStudents.Length);
-        // Rows Count
-        var distinct = arrayStudents.DistinctBy(x => x.Id).ToArray();
         
         Console.WriteLine("Размер уникального массива:" + distinct.Length);
         
         for (var i = 1; i < distinct.Length; i++)
         {
-             Console.WriteLine($"Строка: {i}; Id: {arrayStudents[i].Id}");
-            var fileName = $"{i}_{arrayStudents[i].Id}_{arrayStudents[i].LastName}";
+             Console.WriteLine($"Строка: {i}; Id: {distinct[i].Id}");
+            var fileName = $"{i}_{distinct[i].Id}_{distinct[i].LastName}";
             var currentRow = sheet.CreateRow(i + 1);
             CreateCell(currentRow, 0, i.ToString(), borderedCellStyle);
-            CreateCell(currentRow, 1, arrayStudents[i].LastName, borderedCellStyle);
-            CreateCell(currentRow, 2, arrayStudents[i].FirstName, borderedCellStyle);
-            CreateCell(currentRow, 3, arrayStudents[i].MiddleName, borderedCellStyle);
-            CreateCell(currentRow, 4, arrayStudents[i].NameFaculty, borderedCellStyle);
-            CreateCell(currentRow, 5, arrayStudents[i].NameSpecialty, borderedCellStyle);
+            CreateCell(currentRow, 1, distinct[i].LastName, borderedCellStyle);
+            CreateCell(currentRow, 2, distinct[i].FirstName, borderedCellStyle);
+            CreateCell(currentRow, 3, distinct[i].MiddleName, borderedCellStyle);
+            CreateCell(currentRow, 4, distinct[i].Level, borderedCellStyle);
+            CreateCell(currentRow, 5, distinct[i].YearStart, borderedCellStyle);
             CreateCell(currentRow, 6, fileName + ".jpg", borderedCellStyle);
-            CreateCell(currentRow, 4, arrayStudents[i].Level, borderedCellStyle);
-            CreateCell(currentRow, 5, arrayStudents[i].YearStart, borderedCellStyle);
+            CreateCell(currentRow, 7, distinct[i].NameFaculty, borderedCellStyle);
+            CreateCell(currentRow, 8, distinct[i].NameSpecialty, borderedCellStyle);
             // Скачать фото
             await client.DownloadFileTaskAsync(arrayStudents[i].PathUrl, Directory.GetCurrentDirectory() + "\\images\\" + fileName + ".jpg");
         }
