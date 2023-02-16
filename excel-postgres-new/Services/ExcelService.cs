@@ -33,15 +33,15 @@ public static class ExcelService
         var headerRow = sheet.CreateRow(0);
 
         //Create The Actual Cells
-        CreateCell(headerRow, 0, "№", borderedCellStyle);
-        CreateCell(headerRow, 1, "Фамилия", borderedCellStyle);
-        CreateCell(headerRow, 2, "Имя", borderedCellStyle);
-        CreateCell(headerRow, 3, "Отчество", borderedCellStyle);
-        CreateCell(headerRow, 4, "Форма обучения", borderedCellStyle);
-        CreateCell(headerRow, 5, "Год поступления", borderedCellStyle);
-        CreateCell(headerRow, 6, "Фото", borderedCellStyle);
-        CreateCell(headerRow, 7, "Институт/Факультет", borderedCellStyle);
-        CreateCell(headerRow, 8, "Специальность", borderedCellStyle);
+        //CreateCell(headerRow, 0, "№", borderedCellStyle);
+        CreateCell(headerRow, 0, "Фамилия", borderedCellStyle);
+        CreateCell(headerRow, 1, "Имя", borderedCellStyle);
+        CreateCell(headerRow, 2, "Отчество", borderedCellStyle);
+        CreateCell(headerRow, 3, "Институт/Факультет", borderedCellStyle);
+        CreateCell(headerRow, 4, "Специальность", borderedCellStyle);
+        CreateCell(headerRow, 5, "Фото", borderedCellStyle);
+        CreateCell(headerRow, 6, "Форма обучения", borderedCellStyle);
+        CreateCell(headerRow, 7, "Год поступления", borderedCellStyle);
 
         // Rows Count
         var distinct = arrayStudents
@@ -60,17 +60,21 @@ public static class ExcelService
              Console.WriteLine($"Строка: {i}; Id: {distinct[i].Id}");
             var fileName = $"{i}_{distinct[i].Id}_{distinct[i].LastName}";
             var currentRow = sheet.CreateRow(i + 1);
-            CreateCell(currentRow, 0, i.ToString(), borderedCellStyle);
-            CreateCell(currentRow, 1, distinct[i].LastName, borderedCellStyle);
-            CreateCell(currentRow, 2, distinct[i].FirstName, borderedCellStyle);
-            CreateCell(currentRow, 3, distinct[i].MiddleName, borderedCellStyle);
-            CreateCell(currentRow, 4, distinct[i].Level, borderedCellStyle);
-            CreateCell(currentRow, 5, distinct[i].YearStart, borderedCellStyle);
-            CreateCell(currentRow, 6, fileName + ".jpg", borderedCellStyle);
-            CreateCell(currentRow, 7, distinct[i].NameFaculty, borderedCellStyle);
-            CreateCell(currentRow, 8, distinct[i].NameSpecialty, borderedCellStyle);
+            //CreateCell(currentRow, 0, i.ToString(), borderedCellStyle);
+            CreateCell(currentRow, 0, distinct[i].LastName, borderedCellStyle);
+            CreateCell(currentRow, 1, distinct[i].FirstName, borderedCellStyle);
+            CreateCell(currentRow, 2, distinct[i].MiddleName, borderedCellStyle);
+            CreateCell(currentRow, 3, distinct[i].NameFaculty, borderedCellStyle);
+            CreateCell(currentRow, 4, $"{distinct[i].NameSpecialty}. {distinct[i].ProfileName}", borderedCellStyle);
+            CreateCell(currentRow, 5, fileName + ".jpg", borderedCellStyle);
+            CreateCell(currentRow, 6, distinct[i].Level == "Очная" 
+                ? "Студент очной формы" 
+                : "Студент заочной формы", borderedCellStyle);
+            CreateCell(currentRow, 7, distinct[i].YearStart, borderedCellStyle);
+           
+            
             // Скачать фото
-            await client.DownloadFileTaskAsync(arrayStudents[i].PathUrl, Directory.GetCurrentDirectory() + "\\images\\" + fileName + ".jpg");
+            await client.DownloadFileTaskAsync(distinct[i].PathUrl, Directory.GetCurrentDirectory() + "\\images\\" + fileName + ".jpg");
         }
         // Auto sized all the affected columns
         int lastColumNum = sheet.GetRow(0).LastCellNum;
@@ -84,8 +88,14 @@ public static class ExcelService
         workbook.Write(fileData);
     }
     
-    public static void CreateExcelEmployee(string reportName, string nameSheet , Employee[] arrayEmployees)
+    public static async Task CreateExcelEmployee(string reportName, string nameSheet , Employee[] arrayEmployees, HttpClient client)
     {
+        var distinctArray = arrayEmployees
+            .Where(x => x.Card == "0" && x.FlagStudent == false)
+            .OrderBy(x => x.DepartmentName)
+            .ThenBy(x => x.PositionName)
+            .ToArray();
+        
             var workbook = new HSSFWorkbook();
             var myFont = (HSSFFont)workbook.CreateFont();
             myFont.FontHeightInPoints = 11;
@@ -105,26 +115,35 @@ public static class ExcelService
             var headerRow = sheet.CreateRow(0);
 
             //Create The Actual Cells
-            CreateCell(headerRow, 0, "№", borderedCellStyle);
-            CreateCell(headerRow, 1, "Фамилия", borderedCellStyle);
-            CreateCell(headerRow, 2, "Имя", borderedCellStyle);
-            CreateCell(headerRow, 3, "Отчество", borderedCellStyle);
+            // CreateCell(headerRow, 0, "№", borderedCellStyle);
+            CreateCell(headerRow, 0, "Фамилия", borderedCellStyle);
+            CreateCell(headerRow, 1, "Имя", borderedCellStyle);
+            CreateCell(headerRow, 2, "Отчество", borderedCellStyle);
+            CreateCell(headerRow, 3, "Фото", borderedCellStyle);
             CreateCell(headerRow, 4, "Отдел", borderedCellStyle);
             CreateCell(headerRow, 5, "Должность", borderedCellStyle);
-            
+
             // Rows Count
-            for (var i = 1; i < arrayEmployees.Length; i++)
+            for (var i = 1; i < distinctArray.Length; i++)
             {
+                Console.WriteLine($"Строка: {i}; Id: {distinctArray[i].Id}");
+                
+                var fileName = $"{i}_{distinctArray[i].Id}_{distinctArray[i].FirstName}";
+                
                 var currentRow = sheet.CreateRow(i + 1);
                 
-                CreateCell(currentRow, 1, arrayEmployees[i].FirstName, borderedCellStyle);
-                CreateCell(currentRow, 2, arrayEmployees[i].Name, borderedCellStyle);
-                CreateCell(currentRow, 3, arrayEmployees[i].LastName, borderedCellStyle);
-                CreateCell(currentRow, 4, arrayEmployees[i].DepartmentName, borderedCellStyle);
-                CreateCell(currentRow, 5, arrayEmployees[i].PositionName, borderedCellStyle);
+                // CreateCell(currentRow, 0, i.ToString(), borderedCellStyle);
+                CreateCell(currentRow, 0, distinctArray[i].FirstName, borderedCellStyle);
+                CreateCell(currentRow, 1, distinctArray[i].Name, borderedCellStyle);
+                CreateCell(currentRow, 2, distinctArray[i].LastName, borderedCellStyle);
+                CreateCell(currentRow, 3, fileName + ".jpg", borderedCellStyle);
+                CreateCell(currentRow, 4, distinctArray[i].DepartmentName, borderedCellStyle);
+                CreateCell(currentRow, 5, distinctArray[i].PositionName, borderedCellStyle);
+                // Скачать фото
+                await client.DownloadFileTaskAsync("storage" + distinctArray[i].PathUrl, Directory.GetCurrentDirectory() + "\\images\\" + fileName + ".jpg");
+                
             }
-
-             // Auto sized all the affected columns
+            // Auto sized all the affected columns
             int lastColumNum = sheet.GetRow(0).LastCellNum;
             for (var i = 0; i <= lastColumNum; i++)
             {
@@ -132,7 +151,7 @@ public static class ExcelService
                 GC.Collect();
             }
             // Write Excel to disk 
-            using var fileData = new FileStream($"{reportName}.xls", FileMode.Create);
+            await using var fileData = new FileStream($"{reportName}.xls", FileMode.Create);
             workbook.Write(fileData);
     }
 }

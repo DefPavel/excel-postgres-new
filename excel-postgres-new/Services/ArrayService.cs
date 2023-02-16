@@ -6,6 +6,16 @@ namespace excel_postgres_new.Services;
 
 public static class ArrayService
 {
+    public static SlvaikData[] GetArrayByFile(SlvaikData[] arrayStudents)
+    {
+        using var r = new StreamReader("D:\\Users\\vergel\\Downloads\\Telegram Desktop\\ИФВС нет фото.json");
+        var items = JsonSerializer.Deserialize<List<CheckArray>>(r.ReadToEnd());
+
+        return 
+            (from value in arrayStudents 
+                let peoples = items.FirstOrDefault(x => x.FirstName == value.LastName && x.Name == value.FirstName && x.LastName == value.MiddleName) 
+                where peoples != null select value).ToArray();
+    }
     public static void CountsArraysNoPhoto(SlvaikData[] arrayStudents)
     {
         // Получаем уникальное количество институтов
